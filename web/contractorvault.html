@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContractorVault | NDA Compliance</title>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui']
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="icon" href="icons/titi.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#4338ca">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      min-height: 100dvh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .app-shell {
+      display: grid;
+      grid-template-columns: 16.75rem minmax(0, 1fr);
+      min-height: 100dvh;
+    }
+    .sidebar {
+      border-right: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+    .surface {
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+    }
+    .metric {
+      min-height: 7.35rem;
+    }
+    .tab[aria-pressed="true"] {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+    }
+    .contractor-row {
+      transition: background-color 150ms ease;
+    }
+    .contractor-row:hover {
+      background: #f8fafc;
+    }
+    .timeline-dot {
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 999px;
+      background: #4f46e5;
+      box-shadow: 0 0 0 4px #eef2ff;
+    }
+    .toggle-track {
+      width: 3rem;
+      height: 1.6rem;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #e2e8f0;
+      position: relative;
+      transition: background 160ms ease, border-color 160ms ease;
+    }
+    .toggle-track::after {
+      content: "";
+      position: absolute;
+      top: 0.18rem;
+      left: 0.18rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+      transition: transform 160ms ease;
+    }
+    .toggle-track[data-on="true"] {
+      background: #4f46e5;
+      border-color: #4f46e5;
+    }
+    .toggle-track[data-on="true"]::after {
+      transform: translateX(1.36rem);
+    }
+    @media (max-width: 980px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { border-right: 0; border-bottom: 1px solid #e2e8f0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar p-4 lg:sticky lg:top-0 lg:h-screen">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-700 text-white">
+          <i class="fas fa-file-signature"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-black leading-tight">ContractorVault</h1>
+          <p class="text-xs font-semibold text-slate-500">NDA enforcement</p>
+        </div>
+      </div>
+
+      <nav class="mt-8 space-y-1">
+        <a href="contractorvault.html" class="flex items-center gap-3 rounded-lg bg-indigo-50 px-3 py-2.5 text-sm font-black text-indigo-800">
+          <i class="fas fa-gauge-high w-5"></i>
+          Compliance
+        </a>
+        <a href="portfolio.html" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+          <i class="fas fa-table-columns w-5"></i>
+          Portfolio
+        </a>
+        <a href="licenseguard.html" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+          <i class="fas fa-shield-halved w-5"></i>
+          LicenseGuard
+        </a>
+        <a href="refreshops.html" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+          <i class="fas fa-laptop w-5"></i>
+          RefreshOps
+        </a>
+      </nav>
+
+      <section class="mt-8 surface p-4">
+        <p class="text-xs font-black uppercase text-slate-400">Connected Stack</p>
+        <div class="mt-4 space-y-3">
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fas fa-pen-nib text-indigo-600"></i> DocuSign</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fab fa-jira text-blue-600"></i> Jira</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fab fa-slack text-rose-600"></i> Slack</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-4 surface p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-black uppercase text-slate-400">Blocker</p>
+            <p class="mt-1 text-sm font-black text-slate-950">Task assignment lock</p>
+          </div>
+          <button id="blocker-toggle" type="button" title="Toggle blocker enforcement" class="toggle-track" data-on="true" aria-pressed="true"></button>
+        </div>
+        <p id="blocker-copy" class="mt-3 text-sm font-semibold leading-6 text-slate-500">Unsigned contractors are blocked in Jira, Asana, and ClickUp.</p>
+      </section>
+    </aside>
+
+    <main class="min-w-0 p-4 sm:p-6 lg:p-8">
+      <header class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <p class="text-sm font-black uppercase text-indigo-700">Contractor NDA Control Center</p>
+          <h2 class="mt-1 text-3xl font-black tracking-normal text-slate-950 sm:text-4xl">NDA Enforcement Dashboard</h2>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <button id="send-batch" type="button" title="Send NDA reminders" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700">
+            <i class="fas fa-paper-plane"></i>
+            Send Reminders
+          </button>
+          <button id="add-contractor" type="button" title="Trigger NDA workflow" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-indigo-700 px-4 text-sm font-black text-white transition hover:bg-indigo-800">
+            <i class="fas fa-user-plus"></i>
+            Add Contractor
+          </button>
+        </div>
+      </header>
+
+      <section class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Active Contractors</p>
+            <i class="fas fa-users text-slate-500"></i>
+          </div>
+          <p id="metric-contractors" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Across current projects</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Signed NDAs</p>
+            <i class="fas fa-circle-check text-emerald-600"></i>
+          </div>
+          <p id="metric-signed" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Ready for assignment</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Blocked</p>
+            <i class="fas fa-ban text-rose-600"></i>
+          </div>
+          <p id="metric-blocked" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Unsigned or expired</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Plan</p>
+            <i class="fas fa-credit-card text-amber-600"></i>
+          </div>
+          <p id="metric-plan" class="mt-5 text-3xl font-black">$29</p>
+          <p id="metric-plan-copy" class="mt-1 text-sm font-semibold text-slate-500">Starter, up to 20 contractors</p>
+        </article>
+      </section>
+
+      <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div class="space-y-4">
+          <section class="surface p-4">
+            <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_13rem_13rem] lg:items-end">
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">Search</span>
+                <span class="relative block">
+                  <i class="fas fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+                  <input id="contractor-search" type="search" placeholder="Find contractor, project, or manager" class="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm font-semibold outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100">
+                </span>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">Template</span>
+                <select id="template-select" class="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100">
+                  <option value="Mutual NDA">Mutual NDA</option>
+                  <option value="One-Way NDA">One-Way NDA</option>
+                  <option value="Agency NDA">Agency NDA</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">PM Tool</span>
+                <select id="pm-select" class="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100">
+                  <option>Jira</option>
+                  <option>Asana</option>
+                  <option>ClickUp</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="status-tabs" class="mt-4 flex gap-2 overflow-x-auto">
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="signed" aria-pressed="false">Signed</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="unsigned" aria-pressed="false">Unsigned</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="blocked" aria-pressed="false">Blocked</button>
+            </div>
+          </section>
+
+          <section class="surface overflow-hidden">
+            <div class="flex flex-col gap-3 border-b border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 class="text-base font-black text-slate-950">Contractor Access</h3>
+                <p id="queue-copy" class="mt-1 text-sm font-semibold text-slate-500">NDA workflow triggered before task assignment.</p>
+              </div>
+              <button id="block-selected" type="button" title="Block selected contractors" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:border-rose-300 hover:text-rose-700 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">
+                <i class="fas fa-ban"></i>
+                Block Selected
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[60rem] border-collapse text-left">
+                <thead class="bg-slate-50 text-xs font-black uppercase text-slate-400">
+                  <tr>
+                    <th class="w-12 px-4 py-3">
+                      <input id="select-all" type="checkbox" class="h-4 w-4 rounded border-slate-300 accent-indigo-700">
+                    </th>
+                    <th class="px-4 py-3">Contractor</th>
+                    <th class="px-4 py-3">Project</th>
+                    <th class="px-4 py-3">NDA</th>
+                    <th class="px-4 py-3">PM Access</th>
+                    <th class="px-4 py-3">Manager</th>
+                    <th class="px-4 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="contractor-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <aside class="space-y-4">
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Template Library</h3>
+              <i class="fas fa-folder-open text-slate-400"></i>
+            </div>
+            <div id="template-library" class="mt-5 space-y-3"></div>
+          </section>
+
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Workflow</h3>
+              <i class="fas fa-diagram-project text-slate-400"></i>
+            </div>
+            <div class="mt-5 space-y-4">
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">Freelancer added</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">API event starts the NDA workflow.</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">Signature requested</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">DocuSign sends the selected template.</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">Task access enforced</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">Unsigned users are blocked in the PM tool.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Audit Trail</h3>
+              <i class="fas fa-fingerprint text-slate-400"></i>
+            </div>
+            <div id="audit-list" class="mt-5 space-y-4"></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-root" class="pointer-events-none fixed bottom-5 right-5 z-50 flex w-[min(92vw,22rem)] flex-col gap-3"></div>
+
+  <script>
+    const templates = [
+      { name: "Mutual NDA", type: "Two-way confidentiality", uses: 18 },
+      { name: "One-Way NDA", type: "Company protected disclosure", uses: 42 },
+      { name: "Agency NDA", type: "Team and subcontractor coverage", uses: 9 }
+    ];
+
+    const contractors = [
+      { id: "c-101", name: "Maya Rivers", email: "maya@studio.test", project: "Brand Refresh", manager: "N. Patel", status: "Signed", template: "Mutual NDA", signedAt: "Jun 24, 2026", ip: "172.16.4.28", access: "Allowed" },
+      { id: "c-102", name: "Theo Grant", email: "theo@motion.test", project: "Launch Video", manager: "A. Miles", status: "Unsigned", template: "One-Way NDA", signedAt: "", ip: "", access: "Blocked" },
+      { id: "c-103", name: "Lina Chen", email: "lina@ux.test", project: "Mobile UX", manager: "D. Park", status: "Signed", template: "One-Way NDA", signedAt: "Jun 22, 2026", ip: "192.168.1.42", access: "Allowed" },
+      { id: "c-104", name: "Owen Brooks", email: "owen@copy.test", project: "Website Copy", manager: "R. Kim", status: "Sent", template: "Agency NDA", signedAt: "", ip: "", access: "Blocked" },
+      { id: "c-105", name: "Priya Nair", email: "priya@data.test", project: "Analytics Cleanup", manager: "S. Lin", status: "Expired", template: "Mutual NDA", signedAt: "Jan 13, 2025", ip: "10.0.8.19", access: "Blocked" },
+      { id: "c-106", name: "Sam Torres", email: "sam@ops.test", project: "Support Playbook", manager: "J. Stone", status: "Signed", template: "One-Way NDA", signedAt: "Jun 25, 2026", ip: "172.16.8.77", access: "Allowed" }
+    ];
+
+    let selected = new Set();
+    let currentFilter = "all";
+    let blockerEnabled = true;
+    let audit = [
+      ["Today", "Sam Torres signed One-Way NDA from IP 172.16.8.77."],
+      ["Today", "Theo Grant blocked from Jira task assignment."],
+      ["Jun 24", "Maya Rivers signed Mutual NDA from IP 172.16.4.28."],
+      ["Jun 23", "Agency NDA template approved for subcontractor coverage."]
+    ];
+
+    const table = document.getElementById("contractor-table");
+    const search = document.getElementById("contractor-search");
+    const tabs = document.getElementById("status-tabs");
+
+    function statusClass(status) {
+      if (status === "Signed") return "bg-emerald-50 text-emerald-700";
+      if (status === "Sent") return "bg-amber-50 text-amber-700";
+      if (status === "Expired") return "bg-rose-50 text-rose-700";
+      return "bg-slate-100 text-slate-700";
+    }
+
+    function accessClass(access) {
+      return access === "Allowed" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700";
+    }
+
+    function isBlocked(contractor) {
+      return contractor.access === "Blocked";
+    }
+
+    function visibleContractors() {
+      const query = search.value.trim().toLowerCase();
+      return contractors.filter(contractor => {
+        const matchesQuery = `${contractor.name} ${contractor.email} ${contractor.project} ${contractor.manager}`.toLowerCase().includes(query);
+        const matchesFilter = currentFilter === "all"
+          || (currentFilter === "signed" && contractor.status === "Signed")
+          || (currentFilter === "unsigned" && contractor.status !== "Signed")
+          || (currentFilter === "blocked" && isBlocked(contractor));
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    function updateMetrics() {
+      const signed = contractors.filter(contractor => contractor.status === "Signed").length;
+      const blocked = contractors.filter(isBlocked).length;
+      const active = contractors.length;
+      const plan = active <= 20
+        ? ["$29", "Starter, up to 20 contractors"]
+        : active <= 100
+        ? ["$99", "Growth, up to 100 contractors"]
+        : ["Ent", "Enterprise unlimited"];
+
+      document.getElementById("metric-contractors").textContent = active;
+      document.getElementById("metric-signed").textContent = signed;
+      document.getElementById("metric-blocked").textContent = blocked;
+      document.getElementById("metric-plan").textContent = plan[0];
+      document.getElementById("metric-plan-copy").textContent = plan[1];
+      document.getElementById("queue-copy").textContent = `${blocked} contractor${blocked === 1 ? "" : "s"} blocked before task assignment.`;
+    }
+
+    function updateSelectionControls() {
+      const selectedCount = selected.size;
+      document.getElementById("block-selected").disabled = selectedCount === 0;
+      const rows = visibleContractors();
+      document.getElementById("select-all").checked = rows.length > 0 && rows.every(contractor => selected.has(contractor.id));
+    }
+
+    function renderTemplates() {
+      document.getElementById("template-library").innerHTML = templates.map(template => `
+        <button type="button" data-template="${template.name}" class="block w-full rounded-lg border border-slate-200 p-3 text-left transition hover:border-indigo-300 hover:bg-indigo-50">
+          <span class="block text-sm font-black text-slate-950">${template.name}</span>
+          <span class="mt-1 block text-sm font-semibold text-slate-500">${template.type}</span>
+          <span class="mt-2 inline-flex rounded-lg bg-slate-100 px-2 py-1 text-xs font-black text-slate-600">${template.uses} sends</span>
+        </button>
+      `).join("");
+    }
+
+    function renderTable() {
+      const rows = visibleContractors();
+      updateMetrics();
+
+      if (!rows.length) {
+        table.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-10 text-center">
+              <i class="fas fa-folder-open text-3xl text-slate-300"></i>
+              <p class="mt-3 text-sm font-black text-slate-600">No contractors match this view.</p>
+            </td>
+          </tr>
+        `;
+        updateSelectionControls();
+        return;
+      }
+
+      table.innerHTML = rows.map(contractor => `
+        <tr class="contractor-row text-sm">
+          <td class="px-4 py-3">
+            <input type="checkbox" class="row-check h-4 w-4 rounded border-slate-300 accent-indigo-700" data-id="${contractor.id}" ${selected.has(contractor.id) ? "checked" : ""}>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-xs font-black text-indigo-700">${contractor.name.split(" ").map(part => part[0]).join("")}</span>
+              <span class="min-w-0">
+                <span class="block truncate font-black text-slate-950">${contractor.name}</span>
+                <span class="block truncate text-xs font-semibold text-slate-500">${contractor.email}</span>
+              </span>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <span class="font-black text-slate-700">${contractor.project}</span>
+            <span class="block text-xs font-semibold text-slate-500">${document.getElementById("pm-select").value}</span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="inline-flex rounded-lg px-2.5 py-1 text-xs font-black ${statusClass(contractor.status)}">${contractor.status}</span>
+            <span class="mt-1 block text-xs font-semibold text-slate-500">${contractor.template}</span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="inline-flex rounded-lg px-2.5 py-1 text-xs font-black ${accessClass(contractor.access)}">${contractor.access}</span>
+          </td>
+          <td class="px-4 py-3 font-semibold text-slate-600">${contractor.manager}</td>
+          <td class="px-4 py-3 text-right">
+            <button type="button" data-action="${contractor.status === "Signed" ? "view" : "send"}" data-id="${contractor.id}" title="${contractor.status === "Signed" ? "View audit details" : "Send NDA"}" class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700">
+              <i class="fas ${contractor.status === "Signed" ? "fa-fingerprint" : "fa-paper-plane"}"></i>
+              ${contractor.status === "Signed" ? "Audit" : "Send"}
+            </button>
+          </td>
+        </tr>
+      `).join("");
+
+      updateSelectionControls();
+    }
+
+    function renderAudit() {
+      document.getElementById("audit-list").innerHTML = audit.slice(0, 6).map(([time, text]) => `
+        <div class="border-l-2 border-slate-200 pl-3">
+          <p class="text-xs font-black uppercase text-slate-400">${time}</p>
+          <p class="mt-1 text-sm font-semibold leading-6 text-slate-600">${text}</p>
+        </div>
+      `).join("");
+    }
+
+    function showToast(message) {
+      const root = document.getElementById("toast-root");
+      const toast = document.createElement("div");
+      toast.className = "rounded-lg bg-slate-950 px-4 py-3 text-sm font-black text-white shadow-2xl";
+      toast.textContent = message;
+      root.appendChild(toast);
+      setTimeout(() => toast.remove(), 2600);
+    }
+
+    function addAudit(text) {
+      audit.unshift(["Just now", text]);
+      renderAudit();
+    }
+
+    function sendNda(ids) {
+      const template = document.getElementById("template-select").value;
+      ids.forEach(id => {
+        const contractor = contractors.find(item => item.id === id);
+        if (!contractor || contractor.status === "Signed") return;
+        contractor.status = "Sent";
+        contractor.template = template;
+        if (blockerEnabled) contractor.access = "Blocked";
+      });
+      selected.clear();
+      addAudit(`${template} sent to ${ids.length} contractor${ids.length === 1 ? "" : "s"} through DocuSign.`);
+      renderTable();
+      showToast("NDA workflow sent");
+    }
+
+    function blockContractors(ids) {
+      ids.forEach(id => {
+        const contractor = contractors.find(item => item.id === id);
+        if (contractor) contractor.access = "Blocked";
+      });
+      selected.clear();
+      addAudit(`${ids.length} contractor${ids.length === 1 ? "" : "s"} blocked from ${document.getElementById("pm-select").value} assignment.`);
+      renderTable();
+      showToast("Task assignment blocked");
+    }
+
+    document.getElementById("blocker-toggle").addEventListener("click", event => {
+      blockerEnabled = event.currentTarget.dataset.on !== "true";
+      event.currentTarget.dataset.on = String(blockerEnabled);
+      event.currentTarget.setAttribute("aria-pressed", String(blockerEnabled));
+      document.getElementById("blocker-copy").textContent = blockerEnabled
+        ? "Unsigned contractors are blocked in Jira, Asana, and ClickUp."
+        : "Unsigned contractors are flagged, but task assignment is not blocked.";
+      addAudit(`Blocker enforcement ${blockerEnabled ? "enabled" : "disabled"}.`);
+    });
+
+    document.getElementById("add-contractor").addEventListener("click", () => {
+      const nextNumber = contractors.length + 101;
+      contractors.unshift({
+        id: `c-${nextNumber}`,
+        name: "New Contractor",
+        email: `contractor${nextNumber}@vendor.test`,
+        project: "New Project",
+        manager: "Unassigned",
+        status: "Sent",
+        template: document.getElementById("template-select").value,
+        signedAt: "",
+        ip: "",
+        access: blockerEnabled ? "Blocked" : "Pending"
+      });
+      addAudit("API event added a contractor and triggered NDA delivery.");
+      renderTable();
+      showToast("Contractor workflow created");
+    });
+
+    document.getElementById("send-batch").addEventListener("click", () => {
+      const ids = visibleContractors()
+        .filter(contractor => contractor.status !== "Signed")
+        .map(contractor => contractor.id);
+      sendNda(ids);
+    });
+
+    document.getElementById("block-selected").addEventListener("click", () => {
+      blockContractors([...selected]);
+    });
+
+    document.getElementById("select-all").addEventListener("change", event => {
+      visibleContractors().forEach(contractor => {
+        event.target.checked ? selected.add(contractor.id) : selected.delete(contractor.id);
+      });
+      renderTable();
+    });
+
+    table.addEventListener("change", event => {
+      const checkbox = event.target.closest(".row-check");
+      if (!checkbox) return;
+      checkbox.checked ? selected.add(checkbox.dataset.id) : selected.delete(checkbox.dataset.id);
+      updateSelectionControls();
+    });
+
+    table.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const contractor = contractors.find(item => item.id === button.dataset.id);
+      if (!contractor) return;
+      if (button.dataset.action === "send") {
+        sendNda([contractor.id]);
+      } else {
+        showToast(`Signed ${contractor.signedAt} from ${contractor.ip}`);
+      }
+    });
+
+    tabs.addEventListener("click", event => {
+      const tab = event.target.closest("[data-filter]");
+      if (!tab) return;
+      currentFilter = tab.dataset.filter;
+      tabs.querySelectorAll("[data-filter]").forEach(button => {
+        button.setAttribute("aria-pressed", String(button === tab));
+      });
+      renderTable();
+    });
+
+    document.getElementById("template-library").addEventListener("click", event => {
+      const button = event.target.closest("[data-template]");
+      if (!button) return;
+      document.getElementById("template-select").value = button.dataset.template;
+      showToast(`${button.dataset.template} selected`);
+    });
+
+    search.addEventListener("input", renderTable);
+    document.getElementById("pm-select").addEventListener("change", renderTable);
+
+    renderTemplates();
+    renderAudit();
+    renderTable();
+  </script>
+</body>
+</html>

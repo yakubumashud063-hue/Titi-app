@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Titi Family Chat",
+    "slug": "titi-family-chat",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B9D"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B9D"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": ["Camera", "Microphone"],
+          "androidPermissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"]
+        }
+      ],
+      "expo-av",
+      "expo-image-picker"
+    ]
+  }
+}

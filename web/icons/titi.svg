@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Titi">
+  <rect width="192" height="192" rx="42" fill="#ec4899"/>
+  <circle cx="145" cy="49" r="16" fill="#10b981"/>
+  <path fill="#fff" d="M51 47h90v25h-31v78H82V72H51V47Z"/>
+  <path fill="#fdf2f8" d="M58 151c21-12 55-12 76 0-9 12-23 20-38 20s-29-8-38-20Z"/>
+</svg>

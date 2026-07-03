@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RefreshOps | Hardware Lifecycle Tracker</title>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui']
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="icon" href="icons/titi.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0369a1">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      min-height: 100dvh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .app-shell {
+      display: grid;
+      grid-template-columns: 16.75rem minmax(0, 1fr);
+      min-height: 100dvh;
+    }
+    .sidebar {
+      border-right: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+    .surface {
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+    }
+    .metric {
+      min-height: 7.35rem;
+    }
+    .tab[aria-pressed="true"] {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+    }
+    .asset-row {
+      transition: background-color 150ms ease;
+    }
+    .asset-row:hover {
+      background: #f8fafc;
+    }
+    .laptop-art {
+      height: 8.75rem;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(3, 105, 161, 0.92), rgba(15, 23, 42, 0.96)),
+        linear-gradient(90deg, #e2e8f0 0 50%, #cbd5e1 50% 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .laptop-art::before {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      top: 20%;
+      height: 48%;
+      border-radius: 8px 8px 4px 4px;
+      border: 6px solid rgba(255, 255, 255, 0.84);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.05));
+    }
+    .laptop-art::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: 16%;
+      height: 10%;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.28);
+    }
+    .timeline-dot {
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 999px;
+      background: #0284c7;
+      box-shadow: 0 0 0 4px #e0f2fe;
+    }
+    .health-bar {
+      height: 0.55rem;
+      border-radius: 999px;
+      min-width: 0.35rem;
+    }
+    @media (max-width: 980px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { border-right: 0; border-bottom: 1px solid #e2e8f0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar p-4 lg:sticky lg:top-0 lg:h-screen">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-700 text-white">
+          <i class="fas fa-laptop"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-black leading-tight">RefreshOps</h1>
+          <p class="text-xs font-semibold text-slate-500">Hardware lifecycle</p>
+        </div>
+      </div>
+
+      <nav class="mt-8 space-y-1">
+        <a href="refreshops.html" class="flex items-center gap-3 rounded-lg bg-sky-50 px-3 py-2.5 text-sm font-black text-sky-800">
+          <i class="fas fa-gauge-high w-5"></i>
+          Refresh Queue
+        </a>
+        <a href="portfolio.html" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+          <i class="fas fa-table-columns w-5"></i>
+          Portfolio
+        </a>
+        <a href="contractorvault.html" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+          <i class="fas fa-file-signature w-5"></i>
+          ContractorVault
+        </a>
+      </nav>
+
+      <section class="mt-8 surface p-4">
+        <div class="laptop-art"></div>
+        <p class="mt-4 text-xs font-black uppercase text-slate-400">Refresh Policy</p>
+        <p class="mt-1 text-sm font-black text-slate-950">36-month employee laptop cycle</p>
+        <p class="mt-2 text-sm font-semibold leading-6 text-slate-500">RefreshOps alerts IT and Finance 90 days before a device reaches its replacement window.</p>
+      </section>
+
+      <section class="mt-4 surface p-4">
+        <p class="text-xs font-black uppercase text-slate-400">Connected Systems</p>
+        <div class="mt-4 space-y-3">
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fas fa-users-gear text-sky-600"></i> Workday</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fas fa-mobile-screen text-slate-600"></i> Intune</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <span class="flex items-center gap-2 text-slate-600"><i class="fas fa-truck-fast text-amber-600"></i> FedEx</span>
+            <span class="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Live</span>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <main class="min-w-0 p-4 sm:p-6 lg:p-8">
+      <header class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <p class="text-sm font-black uppercase text-sky-700">IT and Finance Control Center</p>
+          <h2 class="mt-1 text-3xl font-black tracking-normal text-slate-950 sm:text-4xl">Hardware Refresh Cycles</h2>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <button id="generate-budget" type="button" title="Generate refresh budget" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:border-sky-300 hover:text-sky-700">
+            <i class="fas fa-chart-pie"></i>
+            Budget Forecast
+          </button>
+          <button id="create-batch" type="button" title="Create purchase orders and return labels" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 text-sm font-black text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Create Batch
+          </button>
+        </div>
+      </header>
+
+      <section class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Managed Assets</p>
+            <i class="fas fa-laptop-code text-slate-500"></i>
+          </div>
+          <p id="metric-assets" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Employee laptops tracked</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Due in 90 Days</p>
+            <i class="fas fa-bell text-amber-600"></i>
+          </div>
+          <p id="metric-due" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Refresh alerts for IT</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">PO Queue</p>
+            <i class="fas fa-file-invoice text-sky-600"></i>
+          </div>
+          <p id="metric-po" class="mt-5 text-3xl font-black">0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Purchase orders to approve</p>
+        </article>
+        <article class="surface metric p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-black text-slate-500">Forecast Spend</p>
+            <i class="fas fa-sack-dollar text-emerald-600"></i>
+          </div>
+          <p id="metric-spend" class="mt-5 text-3xl font-black">$0</p>
+          <p class="mt-1 text-sm font-semibold text-slate-500">Next 90-day refresh wave</p>
+        </article>
+      </section>
+
+      <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div class="space-y-4">
+          <section class="surface p-4">
+            <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_13rem_13rem] lg:items-end">
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">Search</span>
+                <span class="relative block">
+                  <i class="fas fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+                  <input id="asset-search" type="search" placeholder="Find employee, team, serial, or model" class="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm font-semibold outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                </span>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">Alert Window</span>
+                <select id="alert-window" class="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                  <option value="60">60 days</option>
+                  <option value="90" selected>90 days</option>
+                  <option value="120">120 days</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase text-slate-400">Replacement</span>
+                <select id="replacement-model" class="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                  <option value="MacBook Pro 14">$2,299 MacBook Pro 14</option>
+                  <option value="ThinkPad X1">$1,749 ThinkPad X1</option>
+                  <option value="Dell Latitude">$1,399 Dell Latitude</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="status-tabs" class="mt-4 flex gap-2 overflow-x-auto">
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="due" aria-pressed="false">Due Soon</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="overdue" aria-pressed="false">Overdue</button>
+              <button type="button" class="tab h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-600" data-filter="po" aria-pressed="false">PO Ready</button>
+            </div>
+          </section>
+
+          <section class="surface overflow-hidden">
+            <div class="flex flex-col gap-3 border-b border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 class="text-base font-black text-slate-950">Employee Devices</h3>
+                <p id="selection-copy" class="mt-1 text-sm font-semibold text-slate-500">0 assets selected</p>
+              </div>
+              <button id="label-selected" type="button" title="Generate return labels" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:border-sky-300 hover:text-sky-700 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">
+                <i class="fas fa-box"></i>
+                Return Labels
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[64rem] border-collapse text-left">
+                <thead class="bg-slate-50 text-xs font-black uppercase text-slate-400">
+                  <tr>
+                    <th class="w-12 px-4 py-3">
+                      <input id="select-all" type="checkbox" class="h-4 w-4 rounded border-slate-300 accent-sky-700">
+                    </th>
+                    <th class="px-4 py-3">Employee</th>
+                    <th class="px-4 py-3">Device</th>
+                    <th class="px-4 py-3">Age</th>
+                    <th class="px-4 py-3">Refresh Date</th>
+                    <th class="px-4 py-3">Workflow</th>
+                    <th class="px-4 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="asset-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <aside class="space-y-4">
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Budget by Quarter</h3>
+              <i class="fas fa-chart-simple text-slate-400"></i>
+            </div>
+            <div id="budget-bars" class="mt-5 space-y-4"></div>
+          </section>
+
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Automation Flow</h3>
+              <i class="fas fa-diagram-project text-slate-400"></i>
+            </div>
+            <div class="mt-5 space-y-4">
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">90-day refresh alert</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">IT and Finance receive a budget-ready queue.</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">PO generated</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">Procurement gets model, cost center, and employee data.</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <span class="timeline-dot mt-1 flex-none"></span>
+                <div>
+                  <p class="text-sm font-black text-slate-950">Return label created</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">Old device return tracking starts automatically.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="surface p-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-slate-950">Audit Trail</h3>
+              <i class="fas fa-clock-rotate-left text-slate-400"></i>
+            </div>
+            <div id="audit-list" class="mt-5 space-y-4"></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-root" class="pointer-events-none fixed bottom-5 right-5 z-50 flex w-[min(92vw,22rem)] flex-col gap-3"></div>
+
+  <script>
+    const modelCosts = {
+      "MacBook Pro 14": 2299,
+      "ThinkPad X1": 1749,
+      "Dell Latitude": 1399
+    };
+
+    const assets = [
+      { id: "a-101", employee: "Amara Stone", email: "amara@acme.test", team: "Design", model: "MacBook Pro 14", serial: "MBP14-C7K2", purchaseDate: "2023-09-18", refreshDate: "2026-09-18", status: "Due Soon", po: false, label: false, costCenter: "DES-104" },
+      { id: "a-102", employee: "Noah Patel", email: "noah@acme.test", team: "Finance", model: "ThinkPad X1", serial: "TPX1-L92Q", purchaseDate: "2023-07-07", refreshDate: "2026-07-07", status: "Overdue", po: true, label: false, costCenter: "FIN-210" },
+      { id: "a-103", employee: "Mina Brooks", email: "mina@acme.test", team: "Product", model: "MacBook Pro 14", serial: "MBP14-A8P1", purchaseDate: "2024-03-12", refreshDate: "2027-03-12", status: "Healthy", po: false, label: false, costCenter: "PRD-330" },
+      { id: "a-104", employee: "Ethan Cole", email: "ethan@acme.test", team: "Sales", model: "Dell Latitude", serial: "DL7420-X19", purchaseDate: "2023-10-03", refreshDate: "2026-10-03", status: "Due Soon", po: false, label: false, costCenter: "SAL-150" },
+      { id: "a-105", employee: "Priya Shah", email: "priya@acme.test", team: "Engineering", model: "MacBook Pro 14", serial: "MBP14-P6H8", purchaseDate: "2022-12-15", refreshDate: "2025-12-15", status: "Overdue", po: false, label: true, costCenter: "ENG-410" },
+      { id: "a-106", employee: "Lucas Kim", email: "lucas@acme.test", team: "Support", model: "ThinkPad X1", serial: "TPX1-Q77B", purchaseDate: "2024-08-24", refreshDate: "2027-08-24", status: "Healthy", po: false, label: false, costCenter: "SUP-018" },
+      { id: "a-107", employee: "Sofia Nair", email: "sofia@acme.test", team: "Legal", model: "Dell Latitude", serial: "DL7420-R34", purchaseDate: "2023-08-30", refreshDate: "2026-08-30", status: "Due Soon", po: true, label: true, costCenter: "LEG-077" }
+    ];
+
+    let selected = new Set();
+    let currentFilter = "all";
+    let audit = [
+      ["Today", "90-day refresh queue synced from Intune and Workday."],
+      ["Today", "PO drafted for Noah Patel, ThinkPad X1 replacement."],
+      ["Jun 24", "Return label created for Sofia Nair old device."],
+      ["Jun 21", "Finance forecast exported for Q3 refresh wave."]
+    ];
+
+    const table = document.getElementById("asset-table");
+    const search = document.getElementById("asset-search");
+    const tabs = document.getElementById("status-tabs");
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function daysUntil(dateValue) {
+      const today = new Date("2026-06-25T12:00:00");
+      const target = new Date(`${dateValue}T12:00:00`);
+      return Math.round((target - today) / 86400000);
+    }
+
+    function ageMonths(asset) {
+      const today = new Date("2026-06-25T12:00:00");
+      const purchase = new Date(`${asset.purchaseDate}T12:00:00`);
+      return Math.max(0, Math.round((today - purchase) / 2629800000));
+    }
+
+    function alertWindow() {
+      return Number(document.getElementById("alert-window").value);
+    }
+
+    function isDue(asset) {
+      const days = daysUntil(asset.refreshDate);
+      return days <= alertWindow();
+    }
+
+    function isOverdue(asset) {
+      return daysUntil(asset.refreshDate) < 0 || asset.status === "Overdue";
+    }
+
+    function workflowStatus(asset) {
+      if (asset.po && asset.label) return ["Ready", "bg-emerald-50 text-emerald-700"];
+      if (asset.po) return ["PO Created", "bg-sky-50 text-sky-700"];
+      if (asset.label) return ["Label Created", "bg-indigo-50 text-indigo-700"];
+      if (isDue(asset)) return ["Needs Action", "bg-amber-50 text-amber-700"];
+      return ["Monitoring", "bg-slate-100 text-slate-700"];
+    }
+
+    function assetStatus(asset) {
+      if (isOverdue(asset)) return ["Overdue", "bg-rose-50 text-rose-700"];
+      if (isDue(asset)) return ["Due Soon", "bg-amber-50 text-amber-700"];
+      return ["Healthy", "bg-emerald-50 text-emerald-700"];
+    }
+
+    function visibleAssets() {
+      const query = search.value.trim().toLowerCase();
+      return assets.filter(asset => {
+        const matchesQuery = `${asset.employee} ${asset.email} ${asset.team} ${asset.model} ${asset.serial} ${asset.costCenter}`.toLowerCase().includes(query);
+        const matchesFilter = currentFilter === "all"
+          || (currentFilter === "due" && isDue(asset))
+          || (currentFilter === "overdue" && isOverdue(asset))
+          || (currentFilter === "po" && isDue(asset) && !asset.po);
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    function dueAssets() {
+      return assets.filter(isDue);
+    }
+
+    function updateMetrics() {
+      const due = dueAssets();
+      const poReady = due.filter(asset => !asset.po).length;
+      const spend = due.reduce((sum, asset) => sum + modelCosts[asset.model], 0);
+
+      document.getElementById("metric-assets").textContent = assets.length;
+      document.getElementById("metric-due").textContent = due.length;
+      document.getElementById("metric-po").textContent = poReady;
+      document.getElementById("metric-spend").textContent = formatMoney(spend);
+    }
+
+    function updateSelectionControls() {
+      const selectedCount = selected.size;
+      document.getElementById("selection-copy").textContent = `${selectedCount} asset${selectedCount === 1 ? "" : "s"} selected`;
+      document.getElementById("create-batch").disabled = selectedCount === 0;
+      document.getElementById("label-selected").disabled = selectedCount === 0;
+      const rows = visibleAssets();
+      document.getElementById("select-all").checked = rows.length > 0 && rows.every(asset => selected.has(asset.id));
+    }
+
+    function renderTable() {
+      const rows = visibleAssets();
+      updateMetrics();
+
+      if (!rows.length) {
+        table.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-10 text-center">
+              <i class="fas fa-circle-check text-3xl text-emerald-500"></i>
+              <p class="mt-3 text-sm font-black text-slate-600">No devices match this view.</p>
+            </td>
+          </tr>
+        `;
+        updateSelectionControls();
+        return;
+      }
+
+      table.innerHTML = rows.map(asset => {
+        const [status, statusClass] = assetStatus(asset);
+        const [workflow, workflowClass] = workflowStatus(asset);
+        const days = daysUntil(asset.refreshDate);
+        return `
+          <tr class="asset-row text-sm">
+            <td class="px-4 py-3">
+              <input type="checkbox" class="row-check h-4 w-4 rounded border-slate-300 accent-sky-700" data-id="${asset.id}" ${selected.has(asset.id) ? "checked" : ""}>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-xs font-black text-sky-700">${asset.employee.split(" ").map(part => part[0]).join("")}</span>
+                <span class="min-w-0">
+                  <span class="block truncate font-black text-slate-950">${asset.employee}</span>
+                  <span class="block truncate text-xs font-semibold text-slate-500">${asset.team} / ${asset.costCenter}</span>
+                </span>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="font-black text-slate-700">${asset.model}</span>
+              <span class="block text-xs font-semibold text-slate-500">${asset.serial}</span>
+            </td>
+            <td class="px-4 py-3 font-semibold text-slate-600">${ageMonths(asset)} months</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex rounded-lg px-2.5 py-1 text-xs font-black ${statusClass}">${status}</span>
+              <span class="mt-1 block text-xs font-semibold text-slate-500">${days < 0 ? Math.abs(days) + " days overdue" : days + " days left"}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex rounded-lg px-2.5 py-1 text-xs font-black ${workflowClass}">${workflow}</span>
+              <span class="mt-1 block text-xs font-semibold text-slate-500">${asset.po ? "PO drafted" : "PO pending"} / ${asset.label ? "label ready" : "label pending"}</span>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <button type="button" data-action="batch" data-id="${asset.id}" title="Create purchase order and return label" class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-sky-300 hover:text-sky-700">
+                <i class="fas fa-file-circle-plus"></i>
+                Create
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      updateSelectionControls();
+      renderBudget();
+    }
+
+    function renderBudget() {
+      const quarters = [
+        ["Q3 2026", assets.filter(asset => daysUntil(asset.refreshDate) <= 100).reduce((sum, asset) => sum + modelCosts[asset.model], 0)],
+        ["Q4 2026", assets.filter(asset => daysUntil(asset.refreshDate) > 100 && daysUntil(asset.refreshDate) <= 200).reduce((sum, asset) => sum + modelCosts[asset.model], 0)],
+        ["Q1 2027", assets.filter(asset => daysUntil(asset.refreshDate) > 200 && daysUntil(asset.refreshDate) <= 300).reduce((sum, asset) => sum + modelCosts[asset.model], 0)],
+        ["Later", assets.filter(asset => daysUntil(asset.refreshDate) > 300).reduce((sum, asset) => sum + modelCosts[asset.model], 0)]
+      ];
+      const max = Math.max(...quarters.map(([, value]) => value), 1);
+
+      document.getElementById("budget-bars").innerHTML = quarters.map(([label, value]) => `
+        <div>
+          <div class="mb-2 flex items-center justify-between text-sm font-black text-slate-600">
+            <span>${label}</span>
+            <span>${formatMoney(value)}</span>
+          </div>
+          <div class="h-2 rounded-full bg-slate-100">
+            <div class="health-bar bg-sky-600" style="width: ${Math.max(5, Math.round((value / max) * 100))}%"></div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderAudit() {
+      document.getElementById("audit-list").innerHTML = audit.slice(0, 6).map(([time, text]) => `
+        <div class="border-l-2 border-slate-200 pl-3">
+          <p class="text-xs font-black uppercase text-slate-400">${time}</p>
+          <p class="mt-1 text-sm font-semibold leading-6 text-slate-600">${text}</p>
+        </div>
+      `).join("");
+    }
+
+    function showToast(message) {
+      const root = document.getElementById("toast-root");
+      const toast = document.createElement("div");
+      toast.className = "rounded-lg bg-slate-950 px-4 py-3 text-sm font-black text-white shadow-2xl";
+      toast.textContent = message;
+      root.appendChild(toast);
+      setTimeout(() => toast.remove(), 2600);
+    }
+
+    function addAudit(text) {
+      audit.unshift(["Just now", text]);
+      renderAudit();
+    }
+
+    function processAssets(ids, includeLabel = true) {
+      if (!ids.length) return;
+      const replacement = document.getElementById("replacement-model").value;
+      ids.forEach(id => {
+        const asset = assets.find(item => item.id === id);
+        if (!asset) return;
+        asset.po = true;
+        if (includeLabel) asset.label = true;
+        asset.model = replacement;
+      });
+      selected.clear();
+      addAudit(`${ids.length} purchase order${ids.length === 1 ? "" : "s"} generated with ${includeLabel ? "return labels" : "label follow-up"} for ${replacement}.`);
+      renderTable();
+      showToast("Refresh workflow created");
+    }
+
+    table.addEventListener("change", event => {
+      const checkbox = event.target.closest(".row-check");
+      if (!checkbox) return;
+      checkbox.checked ? selected.add(checkbox.dataset.id) : selected.delete(checkbox.dataset.id);
+      updateSelectionControls();
+    });
+
+    table.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      processAssets([button.dataset.id], true);
+    });
+
+    document.getElementById("select-all").addEventListener("change", event => {
+      visibleAssets().forEach(asset => {
+        event.target.checked ? selected.add(asset.id) : selected.delete(asset.id);
+      });
+      renderTable();
+    });
+
+    document.getElementById("create-batch").addEventListener("click", () => {
+      processAssets([...selected], true);
+    });
+
+    document.getElementById("label-selected").addEventListener("click", () => {
+      [...selected].forEach(id => {
+        const asset = assets.find(item => item.id === id);
+        if (asset) asset.label = true;
+      });
+      addAudit(`${selected.size} return shipping label${selected.size === 1 ? "" : "s"} generated through FedEx.`);
+      selected.clear();
+      renderTable();
+      showToast("Return labels generated");
+    });
+
+    document.getElementById("generate-budget").addEventListener("click", () => {
+      addAudit("Finance refresh forecast generated for current alert window.");
+      showToast("Budget forecast generated");
+    });
+
+    tabs.addEventListener("click", event => {
+      const tab = event.target.closest("[data-filter]");
+      if (!tab) return;
+      currentFilter = tab.dataset.filter;
+      tabs.querySelectorAll("[data-filter]").forEach(button => {
+        button.setAttribute("aria-pressed", String(button === tab));
+      });
+      renderTable();
+    });
+
+    search.addEventListener("input", renderTable);
+    document.getElementById("alert-window").addEventListener("change", () => {
+      selected.clear();
+      renderTable();
+    });
+    document.getElementById("replacement-model").addEventListener("change", () => showToast("Replacement model updated"));
+
+    renderAudit();
+    renderTable();
+  </script>
+</body>
+</html>

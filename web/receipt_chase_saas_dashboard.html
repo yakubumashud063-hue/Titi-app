@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReceiptChase | Receipt Compliance Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --font-sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f8fafc;
+  --color-background-tertiary:#f1f5f9;
+  --color-border-secondary:#cbd5e1;
+  --color-border-tertiary:#e2e8f0;
+  --color-text-primary:#0f172a;
+  --color-text-secondary:#64748b;
+  --border-radius-md:8px;
+  --border-radius-lg:8px;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--color-background-tertiary);font-family:var(--font-sans);color:var(--color-text-primary)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{display:flex;flex-direction:column;background:var(--color-background-tertiary);min-height:700px}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:50px;gap:12px}
+.brand{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:500;color:var(--color-text-primary);flex-shrink:0}
+.brand i{font-size:19px;color:#3B6D11}
+.pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:#EAF3DE;color:#3B6D11}
+.nav{display:flex;gap:2px}
+.nav-btn{background:none;border:none;font-size:12px;padding:5px 11px;border-radius:6px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);white-space:nowrap}
+.nav-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-sm{font-size:12px;padding:5px 12px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary);cursor:pointer;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-sm:hover{background:var(--color-background-secondary)}
+.btn-primary{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.btn-primary:hover{background:#27500A}
+.main{flex:1;padding:1.25rem;display:flex;flex-direction:column;gap:1rem}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metric{background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:.875rem 1rem;border:0.5px solid var(--color-border-tertiary)}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:11px;margin-top:3px}
+.panel{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden}
+.ph{padding:.875rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ph-title{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:7px}
+.ph-title i{font-size:15px;color:var(--color-text-secondary)}
+.filter-row{display:flex;gap:7px;align-items:center}
+.filter-row select,.filter-row input{font-size:12px;padding:4px 9px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans)}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;padding:7px 1rem;text-align:left;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+td{padding:9px 1rem;font-size:12px;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.b-red{background:#FCEBEB;color:#A32D2D}
+.b-amber{background:#FAEEDA;color:#854F0B}
+.b-blue{background:#E6F1FB;color:#185FA5}
+.b-green{background:#EAF3DE;color:#3B6D11}
+.b-gray{background:#F1EFE8;color:#5F5E5A}
+.b-purple{background:#EEEDFE;color:#534AB7}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.av-blue{background:#E6F1FB;color:#185FA5}
+.av-teal{background:#E1F5EE;color:#0F6E56}
+.av-coral{background:#FAECE7;color:#993C1D}
+.av-purple{background:#EEEDFE;color:#534AB7}
+.av-amber{background:#FAEEDA;color:#854F0B}
+.av-pink{background:#FBEAF0;color:#993556}
+.person-cell{display:flex;align-items:center;gap:8px;min-width:0}
+.person-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person-role{font-size:10px;color:var(--color-text-secondary)}
+.action-group{display:flex;gap:5px;align-items:center}
+.act{font-size:10px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--color-border-secondary);background:none;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);display:inline-flex;align-items:center;gap:3px}
+.act:hover{background:var(--color-background-secondary)}
+.act.slack{border-color:#534AB7;color:#534AB7}
+.act.escalate{border-color:#A32D2D;color:#A32D2D}
+.act.mark{border-color:#3B6D11;color:#3B6D11}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.timeline{padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.tl-item:last-child{border-bottom:none}
+.tl-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.tl-icon i{font-size:14px}
+.tl-body{flex:1;min-width:0}
+.tl-title{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.tl-meta{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+.tl-time{font-size:10px;color:var(--color-text-secondary);flex-shrink:0;margin-top:3px}
+.slack-preview{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin:6px 0;border-left:3px solid #534AB7;border-radius:0}
+.slack-sender{font-size:11px;font-weight:500;color:#534AB7;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.slack-msg{font-size:12px;color:var(--color-text-primary);line-height:1.5}
+.slack-link{color:#185FA5;font-size:11px;margin-top:4px;display:block}
+.slack-time{font-size:10px;color:var(--color-text-secondary);margin-top:3px}
+.esc-preview{background:#FCEBEB;border-left:3px solid #A32D2D;border-radius:0;padding:10px 12px;margin:6px 0}
+.esc-sender{font-size:11px;font-weight:500;color:#A32D2D;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.esc-msg{font-size:12px;color:#791F1F;line-height:1.5}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sg-section{padding:1.25rem;border-right:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.sg-section:nth-child(2n){border-right:none}
+.sg-section:nth-last-child(-n+2){border-bottom:none}
+.sg-title{font-size:12px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--color-text-primary)}
+.sg-title i{font-size:14px;color:var(--color-text-secondary)}
+.sg-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sg-label{font-size:12px;color:var(--color-text-primary)}
+.sg-desc{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
+.toggle{width:32px;height:18px;background:#B4B2A9;border-radius:20px;position:relative;cursor:pointer;border:none;transition:background .15s;flex-shrink:0}
+.toggle.on{background:#3B6D11}
+.toggle::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .15s}
+.toggle.on::after{left:17px}
+.num-input{width:52px;padding:3px 7px;border-radius:4px;border:0.5px solid var(--color-border-secondary);font-size:12px;font-family:var(--font-sans);background:var(--color-background-primary);color:var(--color-text-primary);text-align:center}
+.channel-btn{font-size:11px;padding:4px 10px;border-radius:5px;border:0.5px solid var(--color-border-secondary);background:none;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.channel-btn.sel{background:#EEEDFE;color:#534AB7;border-color:#AFA9EC}
+.toast{background:#27500A;color:#C0DD97;border-radius:8px;padding:9px 14px;font-size:12px;display:none;align-items:center;gap:7px;position:absolute;bottom:16px;right:16px;z-index:99}
+.toast.show{display:flex}
+.empty{padding:2.5rem;text-align:center;color:var(--color-text-secondary);font-size:12px}
+@media(max-width:920px){
+  .topbar{height:auto;min-height:50px;flex-wrap:wrap;padding:.75rem}
+  .nav{order:3;width:100%;overflow-x:auto}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .ph{align-items:flex-start;flex-direction:column}
+  .filter-row{width:100%;overflow-x:auto}
+}
+@media(max-width:640px){
+  .main{padding:.75rem}
+  .metrics,.settings-grid{grid-template-columns:1fr}
+  .sg-section{border-right:none}
+}
+</style>
+</head>
+<body>
+
+<h2 class="sr-only">ReceiptBot — expense receipt compliance dashboard for finance teams</h2>
+
+<div class="app" style="position:relative">
+  <div class="topbar">
+    <div class="brand"><i class="ti ti-receipt" aria-hidden="true"></i> ReceiptBot <span class="pill">Live</span></div>
+    <div class="nav" id="mainNav">
+      <button class="nav-btn active" onclick="sw('transactions')">Transactions</button>
+      <button class="nav-btn" onclick="sw('activity')">Activity log</button>
+      <button class="nav-btn" onclick="sw('settings')">Settings</button>
+    </div>
+    <div class="topbar-right">
+      <a class="btn-sm" href="portfolio.html"><i class="ti ti-table-options" aria-hidden="true"></i> Portfolio</a>
+      <button class="btn-sm" onclick="syncNow()"><i class="ti ti-refresh" aria-hidden="true"></i> Sync cards</button>
+      <button class="btn-sm btn-primary" onclick="chaseAll()"><i class="ti ti-send" aria-hidden="true"></i> Chase all missing</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="metrics" id="metricsRow"></div>
+    <div class="panel">
+
+      <div id="tab-transactions" class="tab-content active">
+        <div class="ph">
+          <div class="ph-title"><i class="ti ti-credit-card" aria-hidden="true"></i> Card transactions this month</div>
+          <div class="filter-row">
+            <input type="text" id="srch" placeholder="Search employee…" oninput="renderTx()" style="width:140px">
+            <select id="fStatus" onchange="renderTx()">
+              <option value="">All statuses</option>
+              <option value="missing">Missing receipt</option>
+              <option value="chased">Chased</option>
+              <option value="escalated">Escalated</option>
+              <option value="received">Receipt received</option>
+              <option value="exempt">Under $25 / exempt</option>
+            </select>
+            <select id="fDept" onchange="renderTx()">
+              <option value="">All depts</option>
+              <option>Sales</option>
+              <option>Marketing</option>
+              <option>Engineering</option>
+              <option>Operations</option>
+            </select>
+          </div>
+        </div>
+        <table aria-label="Transaction list">
+          <thead><tr>
+            <th style="width:22%">Employee</th>
+            <th style="width:13%">Date</th>
+            <th style="width:20%">Merchant</th>
+            <th style="width:9%">Amount</th>
+            <th style="width:11%">Status</th>
+            <th style="width:11%">Last nudge</th>
+            <th style="width:14%">Actions</th>
+          </tr></thead>
+          <tbody id="txBody"></tbody>
+        </table>
+        <div id="txEmpty" class="empty" style="display:none"><i class="ti ti-check-circle" style="font-size:28px;display:block;margin-bottom:6px;color:#3B6D11" aria-hidden="true"></i>All caught up — no transactions match your filters.</div>
+      </div>
+
+      <div id="tab-activity" class="tab-content">
+        <div class="ph">
+          <div class="ph-title"><i class="ti ti-activity" aria-hidden="true"></i> Automation activity</div>
+          <span style="font-size:11px;color:var(--color-text-secondary)">Last 7 days</span>
+        </div>
+        <div class="timeline" id="activityLog"></div>
+      </div>
+
+      <div id="tab-settings" class="tab-content">
+        <div class="settings-grid" id="settingsGrid"></div>
+      </div>
+
+    </div>
+  </div>
+  <div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> <span id="toastTxt"></span></div>
+</div>
+
+<script>
+const TODAY = '2026-06-25';
+const avCls = ['av-blue','av-teal','av-coral','av-purple','av-amber','av-pink'];
+function av(name,i){return`<div class="avatar ${avCls[i%avCls.length]}">${name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>`}
+
+let txns = [
+  {id:1,name:'Marcus Webb',role:'Account Executive',dept:'Sales',merchant:'Hilton Garden Inn',amount:312.50,date:'2026-06-18',status:'escalated',nudges:3,lastNudge:'Jun 23',manager:'Sarah Chen'},
+  {id:2,name:'Priya Nair',role:'Sales Director',dept:'Sales',merchant:'Delta Airlines',amount:487.00,date:'2026-06-20',status:'escalated',nudges:3,lastNudge:'Jun 24',manager:'James Obi'},
+  {id:3,name:'Tyler Brooks',role:'SDR',dept:'Sales',merchant:'Nobu Restaurant',amount:156.80,date:'2026-06-21',status:'chased',nudges:1,lastNudge:'Jun 23',manager:'Sarah Chen'},
+  {id:4,name:'Amara Diallo',role:'Marketing Manager',dept:'Marketing',merchant:'Facebook Ads',amount:2400.00,date:'2026-06-19',status:'missing',nudges:0,lastNudge:null,manager:'James Obi'},
+  {id:5,name:'Kenji Tanaka',role:'Software Engineer',dept:'Engineering',merchant:'AWS Marketplace',amount:89.99,date:'2026-06-22',status:'missing',nudges:0,lastNudge:null,manager:'Rita Patel'},
+  {id:6,name:'Sofia Reyes',role:'Ops Coordinator',dept:'Operations',merchant:'FedEx',amount:43.20,date:'2026-06-23',status:'received',nudges:1,lastNudge:'Jun 22',manager:'James Obi'},
+  {id:7,name:'Derek Owusu',role:'Account Executive',dept:'Sales',merchant:'Marriott Bonvoy',amount:224.00,date:'2026-06-17',status:'chased',nudges:2,lastNudge:'Jun 24',manager:'Sarah Chen'},
+  {id:8,name:'Lin Zhao',role:'Designer',dept:'Marketing',merchant:'Adobe Creative',amount:54.99,date:'2026-06-24',status:'received',nudges:0,lastNudge:null,manager:'James Obi'},
+  {id:9,name:'Fatima Hassan',role:'BDR',dept:'Sales',merchant:'Uber',amount:18.40,date:'2026-06-24',status:'exempt',nudges:0,lastNudge:null,manager:'Sarah Chen'},
+  {id:10,name:'Carlos Mendez',role:'Account Executive',dept:'Sales',merchant:'Salesforce AppEx',amount:199.00,date:'2026-06-16',status:'missing',nudges:0,lastNudge:null,manager:'Sarah Chen'},
+];
+let nextId = 11;
+
+let actLog = [
+  {type:'escalate',msg:'Escalated Marcus Webb to manager Sarah Chen — 3 reminders ignored',time:'Today 9:02am',icon:'ti-alert-triangle',cls:'av-coral'},
+  {type:'escalate',msg:'Escalated Priya Nair to manager James Obi — $487.00 overdue',time:'Today 8:48am',icon:'ti-alert-triangle',cls:'av-coral'},
+  {type:'slack',msg:'Reminder #2 sent to Derek Owusu via Slack — Marriott Bonvoy $224.00',time:'Yesterday 4:15pm',icon:'ti-brand-slack',cls:'av-purple'},
+  {type:'slack',msg:'Reminder #1 sent to Tyler Brooks via Slack — Nobu Restaurant $156.80',time:'Yesterday 2:30pm',icon:'ti-brand-slack',cls:'av-purple'},
+  {type:'received',msg:'Sofia Reyes uploaded receipt for FedEx $43.20 — case closed',time:'Yesterday 11:22am',icon:'ti-circle-check',cls:'av-teal'},
+  {type:'received',msg:'Lin Zhao submitted Adobe Creative receipt via mobile link',time:'Jun 24 3:10pm',icon:'ti-circle-check',cls:'av-teal'},
+  {type:'sync',msg:'Card sync completed — 3 new transactions imported from Amex Corporate',time:'Jun 24 6:00am',icon:'ti-refresh',cls:'av-blue'},
+  {type:'slack',msg:'First reminder sent to Marcus Webb — Hilton Garden Inn $312.50',time:'Jun 23 9:00am',icon:'ti-brand-slack',cls:'av-purple'},
+  {type:'slack',msg:'First reminder sent to Tyler Brooks — no response after 48h',time:'Jun 23 9:00am',icon:'ti-brand-slack',cls:'av-purple'},
+];
+
+function statusBadge(s){
+  const map={missing:['b-red','Missing receipt'],chased:['b-amber','Chased'],escalated:['b-red','Escalated'],received:['b-green','Received'],exempt:['b-gray','Exempt']};
+  const [cls,lbl]=map[s]||['b-gray',s];
+  return`<span class="badge ${cls}"><span class="dot"></span>${lbl}</span>`;
+}
+
+function renderMetrics(){
+  const missing=txns.filter(t=>t.status==='missing').length;
+  const chased=txns.filter(t=>t.status==='chased').length;
+  const escalated=txns.filter(t=>t.status==='escalated').length;
+  const totalAt=txns.filter(t=>['missing','chased','escalated'].includes(t.status)).reduce((a,t)=>a+t.amount,0);
+  document.getElementById('metricsRow').innerHTML=`
+    <div class="metric"><div class="metric-label"><i class="ti ti-receipt-off" style="font-size:13px" aria-hidden="true"></i>Missing receipts</div><div class="metric-value" style="color:#A32D2D">${missing+chased+escalated}</div><div class="metric-sub" style="color:#A32D2D">Need action</div></div>
+    <div class="metric"><div class="metric-label"><i class="ti ti-brand-slack" style="font-size:13px" aria-hidden="true"></i>Chased via Slack</div><div class="metric-value" style="color:#854F0B">${chased}</div><div class="metric-sub" style="color:#854F0B">Awaiting response</div></div>
+    <div class="metric"><div class="metric-label"><i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>Escalated to mgr</div><div class="metric-value" style="color:#A32D2D">${escalated}</div><div class="metric-sub" style="color:#A32D2D">Manager notified</div></div>
+    <div class="metric"><div class="metric-label"><i class="ti ti-currency-dollar" style="font-size:13px" aria-hidden="true"></i>Total at risk</div><div class="metric-value">$${totalAt.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}</div><div class="metric-sub" style="color:var(--color-text-secondary)">Unsubstantiated</div></div>
+  `;
+}
+
+function renderTx(){
+  const srch=document.getElementById('srch').value.toLowerCase();
+  const fS=document.getElementById('fStatus').value;
+  const fD=document.getElementById('fDept').value;
+  let filtered=txns.filter(t=>{
+    if(srch&&!t.name.toLowerCase().includes(srch)&&!t.merchant.toLowerCase().includes(srch)) return false;
+    if(fS&&t.status!==fS) return false;
+    if(fD&&t.dept!==fD) return false;
+    return true;
+  });
+  const order={escalated:0,missing:1,chased:2,received:3,exempt:4};
+  filtered.sort((a,b)=>(order[a.status]||5)-(order[b.status]||5)||(b.amount-a.amount));
+  const tbody=document.getElementById('txBody');
+  const empty=document.getElementById('txEmpty');
+  if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=filtered.map((t,i)=>{
+    const canChase=t.status==='missing'||t.status==='chased';
+    const canEsc=t.status==='chased'&&t.nudges>=1;
+    const canMark=t.status!=='received'&&t.status!=='exempt';
+    return`<tr>
+      <td><div class="person-cell">${av(t.name,i)}<div><div class="person-name">${t.name}</div><div class="person-role">${t.role}</div></div></div></td>
+      <td style="color:var(--color-text-secondary)">${t.date.slice(5).replace('-','/')}</td>
+      <td>${t.merchant}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">$${t.amount.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td style="font-size:11px;color:var(--color-text-secondary)">${t.lastNudge||'—'}<br><span style="font-size:10px">${t.nudges?t.nudges+' sent':''}</span></td>
+      <td><div class="action-group">
+        ${canChase?`<button class="act slack" onclick="chaseOne(${t.id})" title="Send Slack message"><i class="ti ti-brand-slack" aria-hidden="true"></i> Chase</button>`:''}
+        ${canEsc?`<button class="act escalate" onclick="escalateOne(${t.id})" title="Escalate to manager"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Escalate</button>`:''}
+        ${canMark?`<button class="act mark" onclick="markReceived(${t.id})" title="Mark receipt received"><i class="ti ti-check" aria-hidden="true"></i></button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function chaseOne(id){
+  const t=txns.find(x=>x.id===id);
+  t.nudges++;
+  t.status='chased';
+  t.lastNudge='Now';
+  addLog('slack',`Slack reminder #${t.nudges} sent to ${t.name} — ${t.merchant} $${t.amount.toFixed(2)}`,'ti-brand-slack','av-purple');
+  renderMetrics();renderTx();renderActivity();
+  toast(`Slack message sent to ${t.name.split(' ')[0]}`);
+}
+
+function escalateOne(id){
+  const t=txns.find(x=>x.id===id);
+  t.status='escalated';
+  t.lastNudge='Now';
+  addLog('escalate',`Escalated ${t.name} to manager ${t.manager} — ${t.nudges} reminders ignored, $${t.amount.toFixed(2)} at risk`,'ti-alert-triangle','av-coral');
+  renderMetrics();renderTx();renderActivity();
+  toast(`Escalated to ${t.manager}`);
+}
+
+function markReceived(id){
+  const t=txns.find(x=>x.id===id);
+  t.status='received';
+  addLog('received',`Receipt marked received for ${t.name} — ${t.merchant} $${t.amount.toFixed(2)}`,'ti-circle-check','av-teal');
+  renderMetrics();renderTx();renderActivity();
+  toast('Receipt marked as received');
+}
+
+function chaseAll(){
+  let count=0;
+  txns.forEach(t=>{
+    if(t.status==='missing'&&t.amount>=25){
+      t.status='chased';t.nudges++;t.lastNudge='Now';count++;
+      addLog('slack',`Auto-chase sent to ${t.name} — ${t.merchant} $${t.amount.toFixed(2)}`,'ti-brand-slack','av-purple');
+    }
+  });
+  renderMetrics();renderTx();renderActivity();
+  toast(count?`${count} Slack message${count>1?'s':''} sent`:'No new transactions to chase');
+}
+
+function syncNow(){
+  const merchants=['Lyft Business','WeWork Day Pass','Zoom Phone Add-on','Staples','Grubhub Corporate'];
+  const names=['Jordan Kim','Aisha Patel','Ben Torres'];
+  const depts=['Sales','Marketing','Engineering'];
+  const n={name:names[nextId%names.length],role:'Account Executive',dept:depts[nextId%depts.length],merchant:merchants[nextId%merchants.length],amount:parseFloat((30+Math.random()*200).toFixed(2)),date:TODAY,status:'missing',nudges:0,lastNudge:null,manager:'Sarah Chen',id:nextId++};
+  txns.unshift(n);
+  addLog('sync',`Card sync found 1 new transaction — ${n.merchant} $${n.amount.toFixed(2)} needs receipt`,'ti-refresh','av-blue');
+  renderMetrics();renderTx();renderActivity();
+  toast('Card sync complete — 1 new transaction imported');
+}
+
+function addLog(type,msg,icon,cls){
+  actLog.unshift({type,msg,time:'Just now',icon,cls});
+  if(actLog.length>20) actLog.pop();
+}
+
+function renderActivity(){
+  const iconBg={slack:'av-purple',escalate:'av-coral',received:'av-teal',sync:'av-blue'};
+  document.getElementById('activityLog').innerHTML=actLog.map(a=>{
+    const slackPart = a.type==='slack'?`<div class="slack-preview"><div class="slack-sender"><i class="ti ti-brand-slack" aria-hidden="true"></i> ReceiptBot</div><div class="slack-msg">Hi! Your card charge at <strong>${a.msg.match(/— (.+?) \$/)?.[1]||'merchant'}</strong> needs a receipt. Can you upload one? Takes 30 seconds.<br><a href="#" class="slack-link"><i class="ti ti-camera" aria-hidden="true"></i> Snap &amp; upload receipt →</a></div><div class="slack-time">${a.time}</div></div>`:
+    a.type==='escalate'?`<div class="esc-preview"><div class="esc-sender"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Escalation to manager</div><div class="esc-msg">${a.msg.split('—')[0].trim()} has not responded after ${a.msg.match(/(\d+) reminder/)?.[1]||'3'} reminders. Please follow up directly.</div></div>`:'';
+    return`<div class="tl-item">
+      <div class="tl-icon ${a.cls}" style="background:var(--color-background-secondary)"><i class="ti ${a.icon}" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i></div>
+      <div class="tl-body"><div class="tl-title">${a.msg}</div>${slackPart}</div>
+      <div class="tl-time">${a.time}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSettings(){
+  document.getElementById('settingsGrid').innerHTML=`
+    <div class="sg-section">
+      <div class="sg-title"><i class="ti ti-clock" aria-hidden="true"></i> Reminder timing</div>
+      <div class="sg-row"><div><div class="sg-label">First reminder</div><div class="sg-desc">Hours after transaction posts</div></div><input type="number" class="num-input" value="24"></div>
+      <div class="sg-row"><div><div class="sg-label">Second reminder</div><div class="sg-desc">Hours after first if ignored</div></div><input type="number" class="num-input" value="48"></div>
+      <div class="sg-row"><div><div class="sg-label">Escalate after</div><div class="sg-desc">Total hours before manager alert</div></div><input type="number" class="num-input" value="72"></div>
+      <div class="sg-row"><div><div class="sg-label">Minimum amount ($)</div><div class="sg-desc">Ignore transactions below this</div></div><input type="number" class="num-input" value="25"></div>
+    </div>
+    <div class="sg-section">
+      <div class="sg-title"><i class="ti ti-brand-slack" aria-hidden="true"></i> Messaging channels</div>
+      <div class="sg-row"><div><div class="sg-label">Primary channel</div><div class="sg-desc">How to reach employees</div></div><div style="display:flex;gap:5px"><button class="channel-btn sel">Slack</button><button class="channel-btn">Teams</button><button class="channel-btn">Email</button></div></div>
+      <div class="sg-row"><div><div class="sg-label">Escalation channel</div><div class="sg-desc">How to reach managers</div></div><div style="display:flex;gap:5px"><button class="channel-btn sel">Slack</button><button class="channel-btn">Email</button></div></div>
+      <div class="sg-row" style="margin-top:8px"><div><div class="sg-label">Include upload link</div><div class="sg-desc">Mobile camera link in each message</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="sg-section">
+      <div class="sg-title"><i class="ti ti-adjustments" aria-hidden="true"></i> Automation rules</div>
+      <div class="sg-row"><div><div class="sg-label">Auto-chase on sync</div><div class="sg-desc">Send first reminder automatically</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="sg-row"><div><div class="sg-label">Auto-escalate</div><div class="sg-desc">Message manager without manual step</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="sg-row"><div><div class="sg-label">Block expense report</div><div class="sg-desc">Flag report if receipt missing</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+      <div class="sg-row"><div><div class="sg-label">CC finance on escalation</div><div class="sg-desc">Loop in finance team on manager alerts</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="sg-section">
+      <div class="sg-title"><i class="ti ti-credit-card" aria-hidden="true"></i> Card integrations</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="sg-label">Amex Corporate</span><span class="badge b-green"><span class="dot"></span>Connected</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="sg-label">Visa Commercial</span><span class="badge b-green"><span class="dot"></span>Connected</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="sg-label">Mastercard Business</span><span class="badge b-gray">Not connected</span></div>
+        <button class="btn-sm" style="margin-top:4px;align-self:flex-start"><i class="ti ti-plug" aria-hidden="true"></i> Add card program</button>
+      </div>
+    </div>
+  `;
+}
+
+function sw(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const idx={transactions:0,activity:1,settings:2};
+  document.querySelectorAll('.nav-btn')[idx[name]].classList.add('active');
+  if(name==='activity') renderActivity();
+  if(name==='settings') renderSettings();
+}
+
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  document.getElementById('toastTxt').textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+renderMetrics();
+renderTx();
+</script>
+</body>
+</html>

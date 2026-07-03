@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExemptTrack | Sales Tax Certificate Compliance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --font-sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f8fafc;
+  --color-background-tertiary:#f1f5f9;
+  --color-background-info:#e6f1fb;
+  --color-border-secondary:#cbd5e1;
+  --color-border-tertiary:#e2e8f0;
+  --color-text-primary:#0f172a;
+  --color-text-secondary:#64748b;
+  --border-radius-md:8px;
+  --border-radius-lg:8px;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--color-background-tertiary);font-family:var(--font-sans);color:var(--color-text-primary)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.app{display:flex;flex-direction:column;min-height:600px;background:var(--color-background-tertiary)}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px}
+.brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.brand i{font-size:20px;color:#185FA5}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.badge-live{background:#EAF3DE;color:#3B6D11;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.nav{display:flex;gap:2px}
+.nav-btn{background:none;border:none;font-size:13px;padding:6px 12px;border-radius:6px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.nav-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500}
+.main{flex:1;padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metric{background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:1rem;border:0.5px solid var(--color-border-tertiary)}
+.metric-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px}
+.metric-value{font-size:24px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:11px;margin-top:3px}
+.metric.danger .metric-value{color:#A32D2D}
+.metric.warn .metric-value{color:#854F0B}
+.metric.ok .metric-value{color:#3B6D11}
+.panel{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden}
+.panel-header{padding:1rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:14px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:8px}
+.panel-title i{font-size:16px;color:var(--color-text-secondary)}
+.filter-row{display:flex;gap:8px;align-items:center}
+.filter-row select,.filter-row input{font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans)}
+.cert-table{width:100%;border-collapse:collapse}
+.cert-table th{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;padding:8px 1.25rem;text-align:left;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.cert-table td{padding:10px 1.25rem;font-size:13px;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.cert-table tr:last-child td{border-bottom:none}
+.cert-table tr:hover td{background:var(--color-background-secondary)}
+.status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.status-expired{background:#FCEBEB;color:#A32D2D}
+.status-critical{background:#FAEEDA;color:#854F0B}
+.status-warning{background:#FAEEDA;color:#854F0B}
+.status-active{background:#EAF3DE;color:#3B6D11}
+.status-pending{background:#E6F1FB;color:#185FA5}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.action-btn{background:none;border:0.5px solid var(--color-border-secondary);border-radius:6px;font-size:11px;padding:4px 10px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);display:inline-flex;align-items:center;gap:4px}
+.action-btn:hover{background:var(--color-background-secondary)}
+.action-btn.primary{border-color:#185FA5;color:#185FA5}
+.email-btn{background:#185FA5;color:#fff;border:none;border-radius:6px;font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:4px}
+.email-btn:hover{background:#0C447C}
+.btn-group{display:flex;gap:6px;align-items:center}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.5rem;width:480px;max-width:95vw}
+.modal-title{font-size:16px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.modal-title i{font-size:18px;color:#185FA5}
+.form-row{margin-bottom:12px}
+.form-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;display:block}
+.form-input{width:100%;padding:8px 10px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-family:var(--font-sans)}
+.form-input:focus{outline:none;border-color:#185FA5;box-shadow:0 0 0 2px rgba(24,95,165,0.1)}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1.5rem}
+.modal-cancel{background:none;border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:7px 16px;font-size:13px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.modal-save{background:#185FA5;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:var(--font-sans)}
+.toast{position:fixed;bottom:20px;right:20px;background:#185FA5;color:#fff;border-radius:8px;padding:10px 16px;font-size:13px;display:none;align-items:center;gap:8px;z-index:200;box-shadow:none}
+.toast.show{display:flex}
+.email-preview{background:var(--color-background-secondary);border-radius:6px;border:0.5px solid var(--color-border-tertiary);padding:1rem;font-size:12px;line-height:1.6;color:var(--color-text-secondary);margin-top:8px}
+.email-preview strong{color:var(--color-text-primary)}
+.days-chip{font-size:11px;padding:2px 6px;border-radius:4px;font-weight:500}
+.days-negative{background:#FCEBEB;color:#A32D2D}
+.days-critical{background:#FAEEDA;color:#854F0B}
+.days-warn{background:#FAEEDA;color:#854F0B}
+.days-ok{background:#EAF3DE;color:#3B6D11}
+.empty-state{padding:3rem;text-align:center;color:var(--color-text-secondary);font-size:13px}
+.tab-content{display:none}.tab-content.active{display:block}
+.email-queue-row{display:flex;align-items:flex-start;gap:12px;padding:12px 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.email-queue-row:last-child{border-bottom:none}
+.email-icon{width:36px;height:36px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.email-icon i{font-size:16px;color:#185FA5}
+.email-info{flex:1}
+.email-to{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.email-meta{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.email-when{font-size:11px;color:var(--color-text-secondary);text-align:right;flex-shrink:0}
+.settings-section{padding:1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.settings-section:last-child{border-bottom:none}
+.settings-title{font-size:13px;font-weight:500;margin-bottom:8px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.settings-desc{font-size:12px;color:var(--color-text-secondary)}
+.toggle{width:36px;height:20px;background:#888780;border-radius:20px;position:relative;cursor:pointer;border:none;transition:background .2s}
+.toggle.on{background:#185FA5}
+.toggle::after{content:'';width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:19px}
+.days-input{width:60px;padding:4px 8px;border-radius:4px;border:0.5px solid var(--color-border-secondary);font-size:12px;font-family:var(--font-sans);background:var(--color-background-primary);color:var(--color-text-primary);text-align:center}
+@media(max-width:920px){
+  .topbar{height:auto;min-height:52px;flex-wrap:wrap;gap:.75rem;padding:.75rem}
+  .nav{order:3;width:100%;overflow-x:auto}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .panel-header{align-items:flex-start;flex-direction:column;gap:.75rem}
+  .filter-row{width:100%;overflow-x:auto}
+}
+@media(max-width:640px){
+  .main{padding:.75rem}
+  .metrics{grid-template-columns:1fr}
+  .form-row-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<h2 class="sr-only">Sales tax exemption certificate compliance tracker dashboard</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <i class="ti ti-shield-check" aria-hidden="true"></i>
+      ExemptTrack
+      <span class="badge-live">Live</span>
+    </div>
+    <div class="nav" id="mainNav">
+      <button class="nav-btn active" onclick="switchTab('certificates')">Certificates</button>
+      <button class="nav-btn" onclick="switchTab('emailQueue')">Email queue</button>
+      <button class="nav-btn" onclick="switchTab('settings')">Settings</button>
+    </div>
+    <div class="topbar-right">
+      <a class="action-btn" href="portfolio.html"><i class="ti ti-table-options" aria-hidden="true"></i> Portfolio</a>
+      <button class="action-btn primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i> Add certificate</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="metrics" id="metricsRow"></div>
+
+    <div class="panel">
+      <div id="tab-certificates" class="tab-content active">
+        <div class="panel-header">
+          <div class="panel-title"><i class="ti ti-files" aria-hidden="true"></i> All certificates</div>
+          <div class="filter-row">
+            <input type="text" id="searchInput" placeholder="Search customer…" oninput="renderTable()" style="width:160px">
+            <select id="filterStatus" onchange="renderTable()">
+              <option value="">All statuses</option>
+              <option value="expired">Expired</option>
+              <option value="critical">Critical (≤15 days)</option>
+              <option value="warning">Warning (≤60 days)</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending receipt</option>
+            </select>
+            <select id="filterState" onchange="renderTable()">
+              <option value="">All states</option>
+            </select>
+          </div>
+        </div>
+        <table class="cert-table" aria-label="Certificate list">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>State</th>
+              <th>Certificate #</th>
+              <th>Expiry date</th>
+              <th>Days left</th>
+              <th>Status</th>
+              <th>Last email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="certTableBody"></tbody>
+        </table>
+        <div id="emptyState" class="empty-state" style="display:none"><i class="ti ti-search" aria-hidden="true" style="font-size:32px;display:block;margin-bottom:8px"></i>No certificates match your filters.</div>
+      </div>
+
+      <div id="tab-emailQueue" class="tab-content">
+        <div class="panel-header">
+          <div class="panel-title"><i class="ti ti-mail" aria-hidden="true"></i> Scheduled email notifications</div>
+          <button class="action-btn" onclick="sendAllDue()"><i class="ti ti-send" aria-hidden="true"></i> Send all due now</button>
+        </div>
+        <div id="emailQueueList"></div>
+      </div>
+
+      <div id="tab-settings" class="tab-content">
+        <div class="settings-section">
+          <div class="settings-title">Reminder schedule</div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">First reminder</div>
+              <div class="settings-desc">Days before expiry to send first email</div>
+            </div>
+            <input type="number" class="days-input" id="remind1" value="60">
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">Second reminder</div>
+              <div class="settings-desc">Days before expiry to send follow-up</div>
+            </div>
+            <input type="number" class="days-input" id="remind2" value="30">
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">Final reminder</div>
+              <div class="settings-desc">Days before expiry to send urgent email</div>
+            </div>
+            <input type="number" class="days-input" id="remind3" value="15">
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Automation</div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">Auto-send reminders</div>
+              <div class="settings-desc">Automatically email customers on schedule</div>
+            </div>
+            <button class="toggle on" id="autoToggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">Notify compliance officer</div>
+              <div class="settings-desc">CC your MIS officer on all outgoing emails</div>
+            </div>
+            <button class="toggle on" id="ccToggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-size:13px">Block invoicing on expired certs</div>
+              <div class="settings-desc">Flag orders when certificate has expired</div>
+            </div>
+            <button class="toggle" id="blockToggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Sender details</div>
+          <div class="form-row">
+            <label class="form-label">From name</label>
+            <input class="form-input" value="Compliance Team — Acme Corp" style="max-width:300px">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Reply-to email</label>
+            <input class="form-input" value="compliance@acmecorp.com" style="max-width:300px">
+          </div>
+          <button class="email-btn" style="margin-top:8px" onclick="showToast('Settings saved')"><i class="ti ti-check" aria-hidden="true"></i> Save settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="addModal" style="display:none">
+  <div class="modal-bg">
+    <div class="modal">
+      <div class="modal-title"><i class="ti ti-file-plus" aria-hidden="true"></i> Add exemption certificate</div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Customer name</label><input class="form-input" id="f_name" placeholder="Acme Resellers Inc."></div>
+        <div class="form-row"><label class="form-label">Customer email</label><input class="form-input" id="f_email" placeholder="ap@acmeresellers.com"></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Certificate number</label><input class="form-input" id="f_cert" placeholder="EX-2024-00123"></div>
+        <div class="form-row"><label class="form-label">State</label>
+          <select class="form-input" id="f_state">
+            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option selected>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Issue date</label><input class="form-input" id="f_issue" type="date"></div>
+        <div class="form-row"><label class="form-label">Expiry date</label><input class="form-input" id="f_expiry" type="date"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Certificate type</label>
+        <select class="form-input" id="f_type">
+          <option>Resale certificate</option>
+          <option>Blanket exemption</option>
+          <option>Government entity</option>
+          <option>Non-profit 501(c)(3)</option>
+          <option>Direct pay permit</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-save" onclick="saveCertificate()"><i class="ti ti-check" aria-hidden="true"></i> Save certificate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="emailModal" style="display:none">
+  <div class="modal-bg">
+    <div class="modal">
+      <div class="modal-title"><i class="ti ti-mail-forward" aria-hidden="true"></i> Send renewal request</div>
+      <div id="emailPreviewContent"></div>
+      <div class="modal-footer">
+        <button class="modal-cancel" onclick="document.getElementById('emailModal').style.display='none'">Cancel</button>
+        <button class="modal-save" onclick="confirmSendEmail()"><i class="ti ti-send" aria-hidden="true"></i> Send email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> <span id="toastMsg"></span></div>
+
+<script>
+const today = new Date();
+today.setHours(0,0,0,0);
+
+function daysUntil(dateStr){
+  const d = new Date(dateStr);
+  d.setHours(0,0,0,0);
+  return Math.round((d - today) / 86400000);
+}
+
+function getStatus(days){
+  if(days < 0) return 'expired';
+  if(days <= 15) return 'critical';
+  if(days <= 60) return 'warning';
+  return 'active';
+}
+
+const todayStr = today.toISOString().split('T')[0];
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x.toISOString().split('T')[0]}
+
+let certs = [
+  {id:1,name:'Metro Office Supply LLC',email:'compliance@metroofficellc.com',cert:'EX-TX-2022-0041',state:'TX',issue:'2021-06-10',expiry:addDays(todayStr,-12),type:'Resale certificate',lastEmail:'2025-11-20',emailsSent:3},
+  {id:2,name:'Pacific Wholesale Distributors',email:'tax@pacificwholesale.com',cert:'CA-RES-20240088',state:'CA',issue:'2022-07-01',expiry:addDays(todayStr,8),type:'Blanket exemption',lastEmail:'2025-12-15',emailsSent:2},
+  {id:3,name:'Gulf Coast Traders Inc.',email:'ops@gulfcoasttraders.com',cert:'FL-EX-2023-1192',state:'FL',issue:'2023-03-15',expiry:addDays(todayStr,22),type:'Resale certificate',lastEmail:'2025-12-28',emailsSent:1},
+  {id:4,name:'Heartland Farm Equipment',email:'accounts@heartlandfarm.com',cert:'IA-AGR-2021-0007',state:'IA',issue:'2021-09-01',expiry:addDays(todayStr,47),type:'Government entity',lastEmail:null,emailsSent:0},
+  {id:5,name:'Sunshine State Grocery Group',email:'finance@sunshinegrocery.com',cert:'FL-RES-2023-4441',state:'FL',issue:'2023-06-30',expiry:addDays(todayStr,88),type:'Resale certificate',lastEmail:null,emailsSent:0},
+  {id:6,name:'Mountain View Tech Partners',email:'ar@mountainviewtech.com',cert:'CO-EX-2024-0219',state:'CO',issue:'2024-01-15',expiry:addDays(todayStr,142),type:'Direct pay permit',lastEmail:null,emailsSent:0},
+  {id:7,name:'Northeast Pharma Supply',email:'compliance@nephalms.com',cert:'NY-PHR-2022-8832',state:'NY',issue:'2022-11-01',expiry:addDays(todayStr,195),type:'Non-profit 501(c)(3)',lastEmail:null,emailsSent:0},
+  {id:8,name:'Lone Star Auto Parts',email:'tax@lonestarauto.com',cert:'EX-TX-2023-7712',state:'TX',issue:'2023-08-20',expiry:addDays(todayStr,280),type:'Resale certificate',lastEmail:null,emailsSent:0},
+];
+let nextId = 9;
+let pendingEmailId = null;
+
+function renderMetrics(){
+  const counts = {expired:0,critical:0,warning:0,active:0};
+  certs.forEach(c=>{
+    const s = getStatus(daysUntil(c.expiry));
+    if(s==='expired') counts.expired++;
+    else if(s==='critical') counts.critical++;
+    else if(s==='warning') counts.warning++;
+    else counts.active++;
+  });
+  document.getElementById('metricsRow').innerHTML = `
+    <div class="metric danger"><div class="metric-label">Expired</div><div class="metric-value">${counts.expired}</div><div class="metric-sub" style="color:#A32D2D">Immediate action required</div></div>
+    <div class="metric warn"><div class="metric-label">Expiring ≤15 days</div><div class="metric-value">${counts.critical}</div><div class="metric-sub" style="color:#854F0B">Send renewal now</div></div>
+    <div class="metric warn"><div class="metric-label">Expiring ≤60 days</div><div class="metric-value">${counts.warning}</div><div class="metric-sub" style="color:#854F0B">Schedule reminder</div></div>
+    <div class="metric ok"><div class="metric-label">Active & compliant</div><div class="metric-value">${counts.active}</div><div class="metric-sub" style="color:#3B6D11">No action needed</div></div>
+  `;
+}
+
+function renderTable(){
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const fStatus = document.getElementById('filterStatus').value;
+  const fState = document.getElementById('filterState').value;
+  let filtered = certs.filter(c=>{
+    const days = daysUntil(c.expiry);
+    const status = getStatus(days);
+    if(search && !c.name.toLowerCase().includes(search) && !c.cert.toLowerCase().includes(search)) return false;
+    if(fState && c.state !== fState) return false;
+    if(fStatus){
+      if(fStatus==='critical' && status!=='critical') return false;
+      if(fStatus==='warning' && status!=='warning') return false;
+      if(fStatus==='expired' && status!=='expired') return false;
+      if(fStatus==='active' && status!=='active') return false;
+      if(fStatus==='pending' && !(days <= 60 && days >= 0 && c.emailsSent > 0)) return false;
+    }
+    return true;
+  });
+  filtered.sort((a,b)=>daysUntil(a.expiry)-daysUntil(b.expiry));
+  const tbody = document.getElementById('certTableBody');
+  const empty = document.getElementById('emptyState');
+  if(filtered.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML = filtered.map(c=>{
+    const days = daysUntil(c.expiry);
+    const status = getStatus(days);
+    const statusMap = {expired:'status-expired',critical:'status-critical',warning:'status-warning',active:'status-active',pending:'status-pending'};
+    const statusLabel = {expired:'Expired',critical:'Critical',warning:'Warning',active:'Active',pending:'Pending'};
+    const daysClass = days<0?'days-negative':days<=15?'days-critical':days<=60?'days-warn':'days-ok';
+    const daysLabel = days<0?`${Math.abs(days)}d overdue`:`${days}d left`;
+    const emailCell = c.lastEmail ? `<span style="font-size:11px;color:var(--color-text-secondary)">${c.lastEmail}</span>` : `<span style="font-size:11px;color:var(--color-text-secondary)">Never</span>`;
+    const needsEmail = days <= 60;
+    return `<tr>
+      <td><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--color-text-secondary)">${c.email}</div></td>
+      <td><span style="font-size:12px;font-weight:500;background:var(--color-background-secondary);padding:2px 7px;border-radius:4px">${c.state}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:11px">${c.cert}</span><div style="font-size:11px;color:var(--color-text-secondary)">${c.type}</div></td>
+      <td style="font-size:13px">${c.expiry}</td>
+      <td><span class="days-chip ${daysClass}">${daysLabel}</span></td>
+      <td><span class="status-badge ${statusMap[status]}"><span class="dot"></span>${statusLabel[status]}</span></td>
+      <td>${emailCell}<div style="font-size:10px;color:var(--color-text-secondary)">${c.emailsSent} sent</div></td>
+      <td><div class="btn-group">${needsEmail?`<button class="email-btn" onclick="openEmailModal(${c.id})"><i class="ti ti-mail" aria-hidden="true"></i> Email</button>`:`<button class="action-btn" onclick="openEmailModal(${c.id})"><i class="ti ti-mail" aria-hidden="true"></i> Email</button>`}<button class="action-btn" onclick="deleteCert(${c.id})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function populateStateFilter(){
+  const states = [...new Set(certs.map(c=>c.state))].sort();
+  const sel = document.getElementById('filterState');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All states</option>' + states.map(s=>`<option ${s===cur?'selected':''}>${s}</option>`).join('');
+}
+
+function renderEmailQueue(){
+  const due = certs.filter(c=>{
+    const days = daysUntil(c.expiry);
+    return days <= 60 && days >= -30;
+  }).sort((a,b)=>daysUntil(a.expiry)-daysUntil(b.expiry));
+  const el = document.getElementById('emailQueueList');
+  if(due.length===0){el.innerHTML=`<div class="empty-state"><i class="ti ti-check-circle" style="font-size:32px;display:block;margin-bottom:8px;color:#3B6D11" aria-hidden="true"></i>No emails due right now. All certificates are current.</div>`;return;}
+  el.innerHTML = due.map(c=>{
+    const days = daysUntil(c.expiry);
+    const urgency = days<0?'Overdue — send immediately':days<=15?'Urgent — send today':`Scheduled — send within ${days} days`;
+    const urgColor = days<0?'#A32D2D':days<=15?'#854F0B':'#185FA5';
+    return `<div class="email-queue-row">
+      <div class="email-icon"><i class="ti ti-mail" aria-hidden="true"></i></div>
+      <div class="email-info">
+        <div class="email-to">${c.name} <span style="font-size:11px;color:var(--color-text-secondary)">&lt;${c.email}&gt;</span></div>
+        <div class="email-meta">Certificate ${c.cert} · ${c.state} · ${c.type}</div>
+        <div style="font-size:11px;color:${urgColor};margin-top:3px">${urgency}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <button class="email-btn" onclick="openEmailModal(${c.id})"><i class="ti ti-send" aria-hidden="true"></i> Send</button>
+        <span style="font-size:10px;color:var(--color-text-secondary)">${c.emailsSent} prev. sent</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEmailModal(id){
+  const c = certs.find(x=>x.id===id);
+  const days = daysUntil(c.expiry);
+  const urgency = days<0?'has expired':'is expiring soon';
+  pendingEmailId = id;
+  document.getElementById('emailPreviewContent').innerHTML = `
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">Preview email to <strong style="color:var(--color-text-primary)">${c.email}</strong></div>
+    <div class="email-preview">
+      <strong>To:</strong> ${c.email}<br>
+      <strong>Subject:</strong> Action required — Sales tax exemption certificate renewal (${c.state})<br><br>
+      Dear ${c.name.split(' ')[0]} team,<br><br>
+      We're reaching out because your ${c.type.toLowerCase()} on file for <strong>${c.state}</strong> (certificate #<strong>${c.cert}</strong>) ${urgency}${days<0?` ${Math.abs(days)} days ago`:`s in ${days} day${days===1?'':'s'} on ${c.expiry}`}.<br><br>
+      To maintain your tax-exempt status and uninterrupted service, please submit a renewed certificate using your state's official form at your earliest convenience.<br><br>
+      Reply to this email or upload directly via our portal: <span style="color:#185FA5">exempttrack.acmecorp.com/upload</span><br><br>
+      Thank you,<br>
+      Compliance Team · Acme Corp
+    </div>
+  `;
+  document.getElementById('emailModal').style.display='block';
+}
+
+function confirmSendEmail(){
+  const c = certs.find(x=>x.id===pendingEmailId);
+  c.lastEmail = todayStr;
+  c.emailsSent++;
+  document.getElementById('emailModal').style.display='none';
+  showToast(`Renewal request sent to ${c.email}`);
+  renderTable();renderEmailQueue();
+}
+
+function sendAllDue(){
+  const due = certs.filter(c=>daysUntil(c.expiry)<=60);
+  due.forEach(c=>{c.lastEmail=todayStr;c.emailsSent++;});
+  showToast(`${due.length} renewal request${due.length===1?'':'s'} sent`);
+  renderTable();renderEmailQueue();
+}
+
+function openAddModal(){
+  const today2 = todayStr;
+  document.getElementById('f_issue').value=today2;
+  document.getElementById('f_expiry').value=addDays(today2,365);
+  document.getElementById('f_name').value='';
+  document.getElementById('f_email').value='';
+  document.getElementById('f_cert').value='';
+  document.getElementById('addModal').style.display='block';
+}
+function closeModal(){document.getElementById('addModal').style.display='none';}
+function saveCertificate(){
+  const name=document.getElementById('f_name').value.trim();
+  const email=document.getElementById('f_email').value.trim();
+  const cert=document.getElementById('f_cert').value.trim();
+  const state=document.getElementById('f_state').value;
+  const issue=document.getElementById('f_issue').value;
+  const expiry=document.getElementById('f_expiry').value;
+  const type=document.getElementById('f_type').value;
+  if(!name||!email||!cert||!expiry){showToast('Please fill in all required fields');return;}
+  certs.push({id:nextId++,name,email,cert,state,issue,expiry,type,lastEmail:null,emailsSent:0});
+  closeModal();
+  populateStateFilter();
+  renderMetrics();renderTable();renderEmailQueue();
+  showToast('Certificate added');
+}
+function deleteCert(id){
+  certs = certs.filter(c=>c.id!==id);
+  renderMetrics();renderTable();renderEmailQueue();populateStateFilter();
+  showToast('Certificate removed');
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const labels={certificates:0,emailQueue:1,settings:2};
+  document.querySelectorAll('.nav-btn')[labels[name]].classList.add('active');
+  if(name==='emailQueue') renderEmailQueue();
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+populateStateFilter();
+renderMetrics();
+renderTable();
+</script>
+</body>
+</html>
